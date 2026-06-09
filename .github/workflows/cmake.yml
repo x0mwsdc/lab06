@@ -11,7 +11,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+
+    - name: Prepare Directories
+      run: |
+        mkdir -p sources include examples
+        cat > include/print.hpp << 'INNER_EOF'
+        #pragma once
+        #include <string>
+        #include <iostream>
+        void print(const std::string& text, std::ostream& out = std::cout);
+        INNER_EOF
+        cat > sources/print.cpp << 'INNER_EOF'
+        #include "print.hpp"
+        void print(const std::string& text, std::ostream& out) {
+            out << text;
+        }
+        INNER_EOF
+        cat > examples/example1.cpp << 'INNER_EOF'
+        #include "print.hpp"
+        int main() {
+            print("hello");
+            return 0;
+        }
+        INNER_EOF
+        cat > examples/example2.cpp << 'INNER_EOF'
+        #include "print.hpp"
+        #include <fstream>
+        int main() {
+            std::ofstream file("log.txt");
+            print("hello", file);
+            return 0;
+        }
+        INNER_EOF
 
     - name: Configure CMake
       run: cmake -B build -S .
