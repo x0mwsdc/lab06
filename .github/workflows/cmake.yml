@@ -1,4 +1,4 @@
-name: CMake Build and Test
+name: CMake Build, Test and Package
 
 on:
   push:
@@ -23,3 +23,14 @@ jobs:
 
     - name: Run Tests
       run: cd build && ctest --output-on-failure
+
+    - name: Create Packages via CPack
+      run: cd build && cpack
+
+    - name: Upload Build Packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: generated-packages
+        path: |
+          build/*.tar.gz
+          build/*.deb
